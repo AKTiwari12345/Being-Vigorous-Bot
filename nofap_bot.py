@@ -1,0 +1,33 @@
+from telegram import Update
+from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackContext
+import os
+from dotenv import load_dotenv
+
+# Load token from .env
+load_dotenv()
+TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+
+if not TOKEN:
+    raise ValueError("Bot token is missing! Check your .env file.")
+
+# Initialize bot application
+app = Application.builder().token(TOKEN).build()
+
+# Start command
+async def start(update: Update, context: CallbackContext):
+    await update.message.reply_text("Welcome! This is the NoFap Streak Bot.")
+
+# Message handler for text
+async def message_handler(update: Update, context: CallbackContext):
+    text = update.message.text.lower()
+    if "urge" in text:
+        await update.message.reply_text("Stay strong! Here’s a guide to control urges: [Link]")
+
+# Add handlers
+app.add_handler(CommandHandler("start", start))
+app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, message_handler))
+
+# Run bot
+if __name__ == "__main__":
+    print("Bot is running...")
+    app.run_polling()
